@@ -1,12 +1,12 @@
 import {
     Grid,
     GridIndex,
-    gridSet,
+    generateWeakSortedGrid,
     isGridConsistent,
     isGridSolved,
     parseGridIndex,
     transposeSubgrid,
-} from "./lib/matrix";
+} from "./lib/grid";
 import clsx from "clsx";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -22,20 +22,11 @@ export default function App() {
     }, []);
 
     const handleRegenerate = () => {
-        const l = 6;
-
-        const initialGrid: Grid<number> = {};
-        const widths = [...Array(l).keys()].map(() => Math.floor(Math.random() * l)).sort((a, b) => b - a);
-
-        let n = Date.now();
-
-        for (let j = 0; j < l; j++) {
-            for (let i = 0; i < widths[j]; i++) {
-                gridSet(initialGrid, [j, i], n++);
-            }
-        }
-
-        setGrid(initialGrid);
+        let grid: Grid<number>;
+        do {
+            grid = generateWeakSortedGrid(8);
+        } while (isGridSolved(grid));
+        setGrid(grid);
     };
 
     const handleGridClick = useCallback(

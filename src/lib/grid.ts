@@ -111,3 +111,18 @@ const groupByMapped = <T, K>(
         },
         {} as { [key: string]: K[] },
     );
+
+export function generateWeakSortedGrid(size: number): Grid<number> {
+    const grid: Grid<number> = {};
+    const widths = [...Array(size).keys()].map(() => Math.floor(Math.random() * (size - 2))).sort((a, b) => b - a);
+
+    let n = Date.now();
+
+    for (let j = 0; j < size; j++) {
+        for (let i = 0; i < widths[j]; i++) {
+            gridSet(grid, [j, i], n++);
+        }
+    }
+
+    return grid;
+}
