@@ -45,7 +45,7 @@ export function transposeIndexRelative([i, j]: GridIndex, [i0, j0]: GridIndex): 
     return [i0 + j - j0, j0 + i - i0] as GridIndex;
 }
 
-function getGridIndices<T>(grid: Grid<T>): GridIndex[] {
+export function getGridIndices<T>(grid: Grid<T>): GridIndex[] {
     return Object.keys(grid).map(parseGridIndex);
 }
 
