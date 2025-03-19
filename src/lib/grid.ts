@@ -112,17 +112,54 @@ const groupByMapped = <T, K>(
         {} as { [key: string]: K[] },
     );
 
-export function generateWeakSortedGrid(size: number): Grid<number> {
-    const grid: Grid<number> = {};
-    const widths = [...Array(size).keys()].map(() => Math.floor(Math.random() * (size - 2))).sort((a, b) => b - a);
+export function generateWeakSortedGridUnsolved(size: number): Grid<number> {
+    let grid: Grid<number>;
+    do {
+        grid = generateWeakSortedGrid(size);
+    } while (isGridSolved(grid));
+    return grid;
+}
 
+export function generateWeakSortedGrid(size: number): Grid<number> {
+    return createGridFromWidths(
+        [...Array(size).keys()].map(() => Math.floor(Math.random() * (size - 2))).sort((a, b) => b - a),
+    );
+}
+
+export function serializeGridCoords<T>(g: Grid<T>): string {
+    return getGridWidths(g).join("");
+}
+
+export function deserializeGridCoords(encoded: string) {
+    if (!/\d+/.test(encoded)) return null;
+
+    const widths = encoded.split("").map(Number);
+    return createGridFromWidths(widths);
+}
+
+function createGridFromWidths(widths: number[]): Grid<number> {
+    const grid: Grid<number> = {};
+
+    // this ensures a unique key for animating.
     let n = Date.now();
 
-    for (let j = 0; j < size; j++) {
+    for (let j = 0; j < widths.length; j++) {
         for (let i = 0; i < widths[j]; i++) {
             gridSet(grid, [j, i], n++);
         }
     }
 
     return grid;
+}
+
+function getGridWidths<T>(grid: Grid<T>): number[] {
+    const gridIndices = getGridIndices(grid);
+    const indicesByRow = groupByMapped(
+        gridIndices,
+        (c) => c[0].toString(),
+        (c) => c[1],
+    );
+    const rowIndices = Object.keys(indicesByRow).map(Number);
+    const rowWidths = rowIndices.map((rowIndex) => Math.max(...indicesByRow[rowIndex]) + 1);
+    return rowWidths;
 }

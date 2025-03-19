@@ -1,32 +1,44 @@
 import {
     Grid,
     GridIndex,
-    generateWeakSortedGrid,
+    deserializeGridCoords,
+    generateWeakSortedGridUnsolved,
     isGridConsistent,
     isGridSolved,
     parseGridIndex,
+    serializeGridCoords,
     transposeSubgrid,
 } from "./lib/grid";
 import clsx from "clsx";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { FaCheck, FaCopy } from "react-icons/fa";
 
 export default function App() {
     const [grid, setGrid] = useState<Grid<number>>({});
+    const [hasCopied, setHasCopied] = useState(false);
 
     const isInvalid = useMemo(() => !isGridConsistent(grid), [grid]);
     const isSolved = useMemo(() => isGridSolved(grid), [grid]);
 
     useEffect(() => {
-        handleRegenerate();
+        const params = new URL(document.location.toString()).searchParams;
+        const p = params.get("p");
+
+        let initialGrid = generateWeakSortedGridUnsolved(8);
+
+        if (p) {
+            const deserializedGrid = deserializeGridCoords(p);
+            if (deserializedGrid && isGridConsistent(deserializedGrid)) {
+                initialGrid = deserializedGrid;
+            }
+        }
+
+        setGrid(initialGrid);
     }, []);
 
     const handleRegenerate = () => {
-        let grid: Grid<number>;
-        do {
-            grid = generateWeakSortedGrid(8);
-        } while (isGridSolved(grid));
-        setGrid(grid);
+        setGrid(generateWeakSortedGridUnsolved(8));
     };
 
     const handleGridClick = useCallback(
@@ -37,11 +49,19 @@ export default function App() {
             if (!isGridConsistent(newGrid)) {
                 setTimeout(() => {
                     setGrid(grid);
-                }, 500);
+                }, 600);
             }
         },
         [grid],
     );
+
+    const handleCopy = useCallback(() => {
+        const url = window.location.origin + window.location.pathname + "?p=" + serializeGridCoords(grid);
+        window.history.replaceState({}, "", url);
+        navigator.clipboard.writeText(url);
+        setHasCopied(true);
+        setTimeout(() => setHasCopied(false), 1000);
+    }, [grid]);
 
     const cellSize = 32;
     const cellGap = 2;
@@ -100,14 +120,30 @@ export default function App() {
                             );
                         })}
                     </div>
-                    <motion.button
-                        className="cursor-pointer rounded-sm bg-neutral-300 px-4 py-2 hover:bg-neutral-400"
-                        onClick={handleRegenerate}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        Regenerate
-                    </motion.button>
+                    <div className="flex flex-row items-center gap-2">
+                        <motion.button
+                            className="flex h-10 w-10 cursor-pointer rounded-sm bg-neutral-300 hover:bg-neutral-400"
+                            onClick={handleCopy}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <span className="m-auto">
+                                {hasCopied ? (
+                                    <FaCheck className="text-green-600" />
+                                ) : (
+                                    <FaCopy className="text-neutral-600" />
+                                )}
+                            </span>
+                        </motion.button>
+                        <motion.button
+                            className="cursor-pointer rounded-sm bg-neutral-300 px-4 py-2 hover:bg-neutral-400"
+                            onClick={handleRegenerate}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            Regenerate
+                        </motion.button>
+                    </div>
                 </div>
             </main>
             <footer></footer>
