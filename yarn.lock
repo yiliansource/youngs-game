@@ -473,6 +473,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource-variable/lexend@npm:^5.2.5":
+  version: 5.2.5
+  resolution: "@fontsource-variable/lexend@npm:5.2.5"
+  checksum: 10c0/237860e5f7528f3b0afaa0a302b42a52eb2b5eca3f550bd15b4fc6ba1a45a220d3472b8164612bcf71ce8b051f7c58d44ec60834a0eee254abeea80c3e4d53f1
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -3354,6 +3361,7 @@ __metadata:
   resolution: "youngs-game@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.21.0"
+    "@fontsource-variable/lexend": "npm:^5.2.5"
     "@tailwindcss/vite": "npm:^4.0.14"
     "@trivago/prettier-plugin-sort-imports": "npm:^5.2.2"
     "@types/clone": "npm:^2"

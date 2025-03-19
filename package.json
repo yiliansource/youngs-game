@@ -11,6 +11,7 @@
         "format": "prettier --write ."
     },
     "dependencies": {
+        "@fontsource-variable/lexend": "^5.2.5",
         "@tailwindcss/vite": "^4.0.14",
         "clone": "^2.1.2",
         "clsx": "^2.1.1",
